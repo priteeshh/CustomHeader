@@ -212,3 +212,48 @@ extension ViewController: UITableViewDataSource {
         return cell
     }
 }
+
+/*
+
+ @objc func handleTap() {
+        demoTextField.resignFirstResponder()
+
+    }
+
+
+    @objc func keyboardWillShow(_ notification: Notification) {
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+            return
+        }
+        
+        let keyboardHeight = keyboardFrame.size.height
+        textFieldBottomConstraint.constant = keyboardHeight
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    @objc func keyboardWillHide(_ notification: Notification) {
+        textFieldBottomConstraint.constant = 0
+        
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+
+
+      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        view.addGestureRecognizer(tapGesture)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+           NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+
+*/
+
+
+
+
+
+
+
+
