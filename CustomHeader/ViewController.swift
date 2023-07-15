@@ -215,38 +215,53 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
- @objc func handleTap() {
-        demoTextField.resignFirstResponder()
+    var blurView: UIVisualEffectView?
+    var cellSnapshot: UIView?
 
-    }
-
-
-    @objc func keyboardWillShow(_ notification: Notification) {
-        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
-            return
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.isScrollEnabled = false
+        
+        // Apply a blur effect to the entire table view
+        let blurEffect = UIBlurEffect(style: .light)
+        blurView = UIVisualEffectView(effect: blurEffect)
+        blurView?.frame = tableView.bounds
+        tableView.addSubview(blurView!)
+        
+        // Create a snapshot of the selected cell
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cellSnapshot = cell.snapshotView(afterScreenUpdates: true)
+            cellSnapshot?.frame = cell.frame
+            tableView.addSubview(cellSnapshot!)
         }
         
-        let keyboardHeight = keyboardFrame.size.height
-        textFieldBottomConstraint.constant = keyboardHeight
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
+        // Customize the appearance of the selected cell
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cell.contentView.backgroundColor = UIColor.gray
+            cell.textLabel?.textColor = UIColor.white
         }
-    }
-
-    @objc func keyboardWillHide(_ notification: Notification) {
-        textFieldBottomConstraint.constant = 0
         
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+        // Add tap gesture recognizer to hide the blur screen
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
+        blurView?.addGestureRecognizer(tapGesture)
     }
-
-
-      let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        view.addGestureRecognizer(tapGesture)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-           NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    
+    @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
+        myTableView.isScrollEnabled = true
+        
+        // Remove the blur effect from the table view
+        blurView?.removeFromSuperview()
+        blurView = nil
+        
+        // Remove the snapshot of the deselected cell
+        cellSnapshot?.removeFromSuperview()
+        cellSnapshot = nil
+        
+        // Reset the appearance of the deselected cell
+        if let indexPath = myTableView.indexPathForSelectedRow,
+           let cell = myTableView.cellForRow(at: indexPath) {
+            cell.contentView.backgroundColor = UIColor.clear
+            cell.textLabel?.textColor = UIColor.black
+        }
 
 */
 
