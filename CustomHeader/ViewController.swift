@@ -215,66 +215,46 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
-      func convertHTMLToAttributeText(htmlString: String) -> NSAttributedString? {
-        guard let data = htmlString.data(using: .utf8) else {
-            return nil
-        }
-        
-        do {
-            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ]
-            
-            let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
-            
-            // Define your default font and size
-            let defaultFont = UIFont.systemFont(ofSize: 17)
-            
-            // Apply changes to specific HTML elements
-            let fontSizeMapping: [String: CGFloat] = [
-                "h1": 30,
-                "h2": 25,
-                "h3": 20,
-                "p": 17,
-                // Add more HTML tags and font sizes as needed
-            ]
-            
-            let documentAttributes = try NSAttributedString(data: data, options: options, documentAttributes: nil)
-            
-            // Iterate through the attributed string and apply font changes
-            attributedString.enumerateAttribute(.font, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
-                if let oldFont = value as? UIFont, let fontDescriptor = oldFont.fontDescriptor.object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any], let symbolicTraits = fontDescriptor[.symbolic] as? UInt, let tagName = documentAttributes.attribute(NSAttributedString.Key(rawValue: "NSTag"), at: range.location, effectiveRange: nil) as? String {
-                    
-                    var traits = UIFontDescriptor.SymbolicTraits(rawValue: UInt32(symbolicTraits))
-                    
-                    // Check if we need to apply bold style
-                    if tagName.lowercased() == "strong" {
-                        traits.insert(.traitBold)
-                    }
-                    
-                    // Check if we need to apply italic style
-                    if tagName.lowercased() == "em" {
-                        traits.insert(.traitItalic)
-                    }
-                    
-                    // Get the custom font size if available, otherwise use the default font size
-                    let fontSize = fontSizeMapping[tagName] ?? defaultFont.pointSize
-                    
-                    if let newFontDescriptor = oldFont.fontDescriptor.withSymbolicTraits(UIFontDescriptor.SymbolicTraits(rawValue: traits.rawValue)) {
-                        let newFont = UIFont(descriptor: newFontDescriptor, size: fontSize)
-                        attributedString.removeAttribute(.font, range: range)
-                        attributedString.addAttribute(.font, value: newFont, range: range)
-                    }
-                }
-            }
-            
-            return attributedString
-        } catch {
-            print("Error converting HTML to attribute text: \(error)")
-            return nil
-        }
+    import UIKit
+
+extension String {
+    var htmlToAttributedString: NSAttributedString? {
+        guard let data = data(using: .utf8) else { return nil }
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
+        return try? NSAttributedString(data: data, options: options, documentAttributes: nil)
     }
+}
+
+func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttributedString? {
+    let attributedString = NSMutableAttributedString()
+    
+    // Convert HTML to attributed string
+    if let htmlAttributedString = htmlString.htmlToAttributedString {
+        attributedString.append(htmlAttributedString)
+    }
+    
+    // Set the font and size for the entire string
+    let attributes: [NSAttributedString.Key: Any] = [
+        .font: font
+    ]
+    attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
+    
+    return attributedString
+}
+
+// Example usage:
+if let helveticaFont = UIFont(name: "Helvetica", size: 14) {
+    let htmlString = "<p>This is a <b>bold</b> and <i>italic</i> text.</p>"
+    let attributedString = createAttributedStringFromHTML(htmlString: htmlString, font: helveticaFont)
+    
+    // Now you can use the attributedString in your UILabel, UITextView, etc.
+    // For example, setting it to a UILabel:
+    let label = UILabel()
+    label.attributedText = attributedString
+}
 
 
 */
