@@ -215,49 +215,69 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
-     func convertHTMLToAttributeText(htmlString: String) -> NSAttributedString? {
-        guard let data = htmlString.data(using: .utf8) else {
-            return nil
-        }
+   import UIKit
+
+func convertHTMLToAttributeText(htmlString: String) -> NSAttributedString? {
+    guard let data = htmlString.data(using: .utf8) else {
+        return nil
+    }
+    
+    do {
+        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+            .documentType: NSAttributedString.DocumentType.html,
+            .characterEncoding: String.Encoding.utf8.rawValue
+        ]
         
-        do {
-            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-                .documentType: NSAttributedString.DocumentType.html,
-                .characterEncoding: String.Encoding.utf8.rawValue
-            ]
-            
-            let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
-            
-            // Define your default font and size
-            let defaultFont = UIFont.systemFont(ofSize: 17)
-            
-            // Apply changes to specific HTML elements
-            let fontSizeMapping: [String: CGFloat] = [
-                "h1": 30,
-                "h2": 25,
-                "h3": 20,
-                "p": 17,
-                // Add more HTML tags and font sizes as needed
-            ]
-            
-            let documentAttributes = try NSAttributedString(data: data, options: options, documentAttributes: nil)
-            
-            // Iterate through the attributed string and apply font changes
-            attributedString.enumerateAttribute(.font, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
-                if let oldFont = value as? UIFont, let tagName = documentAttributes.attribute(NSAttributedString.Key(rawValue: "NSTag"), at: range.location, effectiveRange: nil) as? String {
-                    let fontSize = fontSizeMapping[tagName] ?? defaultFont.pointSize
-                    let newFont = UIFont(name: oldFont.fontName, size: fontSize) ?? defaultFont
+        let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
+        
+        // Define your default font and size
+        let defaultFont = UIFont.systemFont(ofSize: 17)
+        
+        // Apply changes to specific HTML elements
+        let fontSizeMapping: [String: CGFloat] = [
+            "h1": 30,
+            "h2": 25,
+            "h3": 20,
+            "p": 17,
+            // Add more HTML tags and font sizes as needed
+        ]
+        
+        let documentAttributes = try NSAttributedString(data: data, options: options, documentAttributes: nil)
+        
+        // Iterate through the attributed string and apply font changes
+        attributedString.enumerateAttribute(.font, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
+            if let oldFont = value as? UIFont, let fontDescriptor = oldFont.fontDescriptor.symbolicTraits, let tagName = documentAttributes.attribute(NSAttributedString.Key(rawValue: "NSTag"), at: range.location, effectiveRange: nil) as? String {
+                
+                var traits = fontDescriptor.symbolicTraits
+                
+                // Check if we need to apply bold style
+                if tagName.lowercased() == "strong" {
+                    traits.insert(.traitBold)
+                }
+                
+                // Check if we need to apply italic style
+                if tagName.lowercased() == "em" {
+                    traits.insert(.traitItalic)
+                }
+                
+                // Get the custom font size if available, otherwise use the default font size
+                let fontSize = fontSizeMapping[tagName] ?? defaultFont.pointSize
+                
+                if let newFontDescriptor = oldFont.fontDescriptor.withSymbolicTraits(traits) {
+                    let newFont = UIFont(descriptor: newFontDescriptor, size: fontSize)
                     attributedString.removeAttribute(.font, range: range)
                     attributedString.addAttribute(.font, value: newFont, range: range)
                 }
             }
-            
-            return attributedString
-        } catch {
-            print("Error converting HTML to attribute text: \(error)")
-            return nil
         }
+        
+        return attributedString
+    } catch {
+        print("Error converting HTML to attribute text: \(error)")
+        return nil
     }
+}
+
 
 */
 
