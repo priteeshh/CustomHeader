@@ -215,53 +215,49 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
-    var blurView: UIVisualEffectView?
-    var cellSnapshot: UIView?
-
-  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.isScrollEnabled = false
-        
-        // Apply a blur effect to the entire table view
-        let blurEffect = UIBlurEffect(style: .light)
-        blurView = UIVisualEffectView(effect: blurEffect)
-        blurView?.frame = tableView.bounds
-        tableView.addSubview(blurView!)
-        
-        // Create a snapshot of the selected cell
-        if let cell = tableView.cellForRow(at: indexPath) {
-            cellSnapshot = cell.snapshotView(afterScreenUpdates: true)
-            cellSnapshot?.frame = cell.frame
-            tableView.addSubview(cellSnapshot!)
+     func convertHTMLToAttributeText(htmlString: String) -> NSAttributedString? {
+        guard let data = htmlString.data(using: .utf8) else {
+            return nil
         }
         
-        // Customize the appearance of the selected cell
-        if let cell = tableView.cellForRow(at: indexPath) {
-            cell.contentView.backgroundColor = UIColor.gray
-            cell.textLabel?.textColor = UIColor.white
+        do {
+            let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            
+            let attributedString = try NSMutableAttributedString(data: data, options: options, documentAttributes: nil)
+            
+            // Define your default font and size
+            let defaultFont = UIFont.systemFont(ofSize: 17)
+            
+            // Apply changes to specific HTML elements
+            let fontSizeMapping: [String: CGFloat] = [
+                "h1": 30,
+                "h2": 25,
+                "h3": 20,
+                "p": 17,
+                // Add more HTML tags and font sizes as needed
+            ]
+            
+            let documentAttributes = try NSAttributedString(data: data, options: options, documentAttributes: nil)
+            
+            // Iterate through the attributed string and apply font changes
+            attributedString.enumerateAttribute(.font, in: NSRange(location: 0, length: attributedString.length), options: []) { (value, range, _) in
+                if let oldFont = value as? UIFont, let tagName = documentAttributes.attribute(NSAttributedString.Key(rawValue: "NSTag"), at: range.location, effectiveRange: nil) as? String {
+                    let fontSize = fontSizeMapping[tagName] ?? defaultFont.pointSize
+                    let newFont = UIFont(name: oldFont.fontName, size: fontSize) ?? defaultFont
+                    attributedString.removeAttribute(.font, range: range)
+                    attributedString.addAttribute(.font, value: newFont, range: range)
+                }
+            }
+            
+            return attributedString
+        } catch {
+            print("Error converting HTML to attribute text: \(error)")
+            return nil
         }
-        
-        // Add tap gesture recognizer to hide the blur screen
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTapGesture(_:)))
-        blurView?.addGestureRecognizer(tapGesture)
     }
-    
-    @objc func handleTapGesture(_ sender: UITapGestureRecognizer) {
-        myTableView.isScrollEnabled = true
-        
-        // Remove the blur effect from the table view
-        blurView?.removeFromSuperview()
-        blurView = nil
-        
-        // Remove the snapshot of the deselected cell
-        cellSnapshot?.removeFromSuperview()
-        cellSnapshot = nil
-        
-        // Reset the appearance of the deselected cell
-        if let indexPath = myTableView.indexPathForSelectedRow,
-           let cell = myTableView.cellForRow(at: indexPath) {
-            cell.contentView.backgroundColor = UIColor.clear
-            cell.textLabel?.textColor = UIColor.black
-        }
 
 */
 
