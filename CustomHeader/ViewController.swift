@@ -215,26 +215,17 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
-    import UIKit
-
-extension String {
-    var htmlToAttributedString: NSAttributedString? {
-        guard let data = data(using: .utf8) else { return nil }
-        let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-            .documentType: NSAttributedString.DocumentType.html,
-            .characterEncoding: String.Encoding.utf8.rawValue
-        ]
-        return try? NSAttributedString(data: data, options: options, documentAttributes: nil)
-    }
-}
+ import UIKit
 
 func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttributedString? {
-    let attributedString = NSMutableAttributedString()
+    let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
+        .documentType: NSAttributedString.DocumentType.html,
+        .characterEncoding: String.Encoding.utf8.rawValue
+    ]
     
     // Convert HTML to attributed string
-    if let htmlAttributedString = htmlString.htmlToAttributedString {
-        attributedString.append(htmlAttributedString)
-    }
+    guard let data = htmlString.data(using: .utf8) else { return nil }
+    guard let attributedString = try? NSMutableAttributedString(data: data, options: options, documentAttributes: nil) else { return nil }
     
     // Set the font and size for the entire string
     let attributes: [NSAttributedString.Key: Any] = [
@@ -242,7 +233,32 @@ func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttri
     ]
     attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
     
+    // Apply bold attribute for <b> tags
+    let boldStyle = [
+        .font: UIFont.boldSystemFont(ofSize: font.pointSize)
+    ]
+    let boldTags = getRangesOfTag(tagName: "b", in: htmlString)
+    for range in boldTags {
+        attributedString.addAttributes(boldStyle, range: range)
+    }
+    
+    // Apply italic attribute for <i> tags
+    let italicStyle = [
+        .font: UIFont.italicSystemFont(ofSize: font.pointSize)
+    ]
+    let italicTags = getRangesOfTag(tagName: "i", in: htmlString)
+    for range in italicTags {
+        attributedString.addAttributes(italicStyle, range: range)
+    }
+    
     return attributedString
+}
+
+func getRangesOfTag(tagName: String, in text: String) -> [NSRange] {
+    let pattern = "<\(tagName)\\b[^>]*>(.*?)</\(tagName)>"
+    let regex = try? NSRegularExpression(pattern: pattern, options: [])
+    let matches = regex?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
+    return matches?.compactMap { $0.range(at: 1) } ?? []
 }
 
 // Example usage:
