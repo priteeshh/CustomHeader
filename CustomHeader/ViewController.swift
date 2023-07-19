@@ -215,7 +215,7 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
- import UIKit
+import UIKit
 
 func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttributedString? {
     let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
@@ -224,18 +224,25 @@ func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttri
     ]
     
     // Convert HTML to attributed string
-    guard let data = htmlString.data(using: .utf8) else { return nil }
-    guard let attributedString = try? NSMutableAttributedString(data: data, options: options, documentAttributes: nil) else { return nil }
+    guard let data = htmlString.data(using: .utf8) else {
+        print("Error: Failed to convert HTML string to data.")
+        return nil
+    }
+    
+    guard let attributedString = try? NSMutableAttributedString(data: data, options: options, documentAttributes: nil) else {
+        print("Error: Failed to create attributed string.")
+        return nil
+    }
     
     // Set the font and size for the entire string
     let attributes: [NSAttributedString.Key: Any] = [
-        .font: font
+        NSAttributedString.Key.font: font
     ]
     attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
     
     // Apply bold attribute for <b> tags
-    let boldStyle = [
-        .font: UIFont.boldSystemFont(ofSize: font.pointSize)
+    let boldStyle: [NSAttributedString.Key: Any] = [
+        NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: font.pointSize)
     ]
     let boldTags = getRangesOfTag(tagName: "b", in: htmlString)
     for range in boldTags {
@@ -243,8 +250,8 @@ func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttri
     }
     
     // Apply italic attribute for <i> tags
-    let italicStyle = [
-        .font: UIFont.italicSystemFont(ofSize: font.pointSize)
+    let italicStyle: [NSAttributedString.Key: Any] = [
+        NSAttributedString.Key.font: UIFont.italicSystemFont(ofSize: font.pointSize)
     ]
     let italicTags = getRangesOfTag(tagName: "i", in: htmlString)
     for range in italicTags {
@@ -264,12 +271,17 @@ func getRangesOfTag(tagName: String, in text: String) -> [NSRange] {
 // Example usage:
 if let helveticaFont = UIFont(name: "Helvetica", size: 14) {
     let htmlString = "<p>This is a <b>bold</b> and <i>italic</i> text.</p>"
-    let attributedString = createAttributedStringFromHTML(htmlString: htmlString, font: helveticaFont)
-    
-    // Now you can use the attributedString in your UILabel, UITextView, etc.
-    // For example, setting it to a UILabel:
-    let label = UILabel()
-    label.attributedText = attributedString
+    if let attributedString = createAttributedStringFromHTML(htmlString: htmlString, font: helveticaFont) {
+        print("Attributed String:")
+        print(attributedString)
+        
+        // Now you can use the attributedString in your UILabel, UITextView, etc.
+        // For example, setting it to a UILabel:
+        let label = UILabel()
+        label.attributedText = attributedString
+    } else {
+        print("Error: Failed to create attributed string from HTML.")
+    }
 }
 
 
