@@ -215,75 +215,28 @@ extension ViewController: UITableViewDataSource {
 
 /*
 
-import UIKit
-
-func createAttributedStringFromHTML(htmlString: String, font: UIFont) -> NSAttributedString? {
-    let options: [NSAttributedString.DocumentReadingOptionKey: Any] = [
-        .documentType: NSAttributedString.DocumentType.html,
-        .characterEncoding: String.Encoding.utf8.rawValue
-    ]
-    
-    // Convert HTML to attributed string
-    guard let data = htmlString.data(using: .utf8) else {
-        print("Error: Failed to convert HTML string to data.")
+    func attributedTextToHTML(_ attributedText: NSAttributedString) -> String? {
+        do {
+            let options: [NSAttributedString.DocumentAttributeKey: Any] = [
+                .documentType: NSAttributedString.DocumentType.html,
+                .characterEncoding: String.Encoding.utf8.rawValue
+            ]
+            let htmlData = try attributedText.data(from: NSRange(location: 0, length: attributedText.length), documentAttributes: options)
+            
+            if let htmlString = String(data: htmlData, encoding: .utf8) {
+                return htmlString
+            }
+        } catch {
+            print("Error converting attributed text to HTML: \(error)")
+        }
         return nil
     }
-    
-    guard let attributedString = try? NSMutableAttributedString(data: data, options: options, documentAttributes: nil) else {
-        print("Error: Failed to create attributed string.")
-        return nil
-    }
-    
-    // Set the font and size for the entire string
-    let attributes: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.font: font
-    ]
-    attributedString.addAttributes(attributes, range: NSRange(location: 0, length: attributedString.length))
-    
-    // Apply bold attribute for <b> tags
-    let boldStyle: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: font.pointSize)
-    ]
-    let boldTags = getRangesOfTag(tagName: "b", in: htmlString)
-    for range in boldTags {
-        attributedString.addAttributes(boldStyle, range: range)
-    }
-    
-    // Apply italic attribute for <i> tags
-    let italicStyle: [NSAttributedString.Key: Any] = [
-        NSAttributedString.Key.font: UIFont.italicSystemFont(ofSize: font.pointSize)
-    ]
-    let italicTags = getRangesOfTag(tagName: "i", in: htmlString)
-    for range in italicTags {
-        attributedString.addAttributes(italicStyle, range: range)
-    }
-    
-    return attributedString
-}
 
-func getRangesOfTag(tagName: String, in text: String) -> [NSRange] {
-    let pattern = "<\(tagName)\\b[^>]*>(.*?)</\(tagName)>"
-    let regex = try? NSRegularExpression(pattern: pattern, options: [])
-    let matches = regex?.matches(in: text, options: [], range: NSRange(location: 0, length: text.utf16.count))
-    return matches?.compactMap { $0.range(at: 1) } ?? []
-}
-
-// Example usage:
-if let helveticaFont = UIFont(name: "Helvetica", size: 14) {
-    let htmlString = "<p>This is a <b>bold</b> and <i>italic</i> text.</p>"
-    if let attributedString = createAttributedStringFromHTML(htmlString: htmlString, font: helveticaFont) {
-        print("Attributed String:")
-        print(attributedString)
-        
-        // Now you can use the attributedString in your UILabel, UITextView, etc.
-        // For example, setting it to a UILabel:
-        let label = UILabel()
-        label.attributedText = attributedString
-    } else {
-        print("Error: Failed to create attributed string from HTML.")
-    }
-}
-
+      
+        let attributedString = NSAttributedString(attributedString: textView.attributedText)
+        if let htmlString = attributedTextToHTML(attributedString) {
+            print(htmlString)
+        }
 
 */
 
